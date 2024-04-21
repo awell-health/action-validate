@@ -1,26 +1,31 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import { parseConfig } from './config'
+import { runPathwayCase } from './test-pathway-case/pathway-case-loop'
+import env from './environment'
+import controller from './abort'
 
-/**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
- */
 export async function run(): Promise<void> {
+  const { cases } = parseConfig(env.FILENAME)
   try {
-    const ms: string = core.getInput('milliseconds')
-
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
-
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    const resp = await Promise.all(cases.map(runPathwayCase(env.CAREFLOW_ID)))
+    core.setOutput('results', JSON.stringify(resp))
+    if (!resp.every(Boolean)) {
+      core.setFailed('One or more cases failed')
+      core.error(JSON.stringify(resp))
+      process.exit(1)
+    }
+  } catch (err) {
+    if (controller.signal.aborted) {
+      core.setFailed('Timeout, aborted')
+      core.warning('aborted, timeout')
+      process.exit(1)
+    } else if (err instanceof Error) {
+      core.setFailed(err)
+      core.error(err)
+      process.exit(1)
+    } else {
+      core.setFailed('Unknown error')
+      process.exit(1)
+    }
   }
 }

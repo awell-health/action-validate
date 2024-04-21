@@ -1,0 +1,14 @@
+query PathwayCase($pathway_case_id: String!) {
+  pathway_case(id: $pathway_case_id) {
+    code
+    success
+    pathway_case {
+      id
+      pathway_id
+      title
+      last_modification_date
+      start_date
+      status
+    }
+  }
+}

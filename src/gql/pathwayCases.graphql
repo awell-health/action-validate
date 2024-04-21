@@ -1,0 +1,14 @@
+query PathwayCases($input: PathwayCasesInput!) {
+  pathway_cases(input: $input) {
+    code
+    success
+    pathway_cases {
+      id
+      pathway_id
+      title
+      last_modification_date
+      start_date
+      status
+    }
+  }
+}

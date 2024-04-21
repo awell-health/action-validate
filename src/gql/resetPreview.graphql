@@ -1,0 +1,14 @@
+mutation ResetPreview($input: ResetPreviewInput!) {
+  resetPreview(input: $input) {
+    code
+    success
+    pathway_case {
+      id
+      pathway_id
+      title
+      last_modification_date
+      start_date
+      status
+    }
+  }
+}

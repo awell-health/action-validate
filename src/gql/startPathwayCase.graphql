@@ -1,0 +1,28 @@
+mutation StartPreview($input: StartPreviewInput!) {
+  startPreview(input: $input) {
+    code
+    success
+    pathway_case {
+      id
+      pathway_id
+      title
+      last_modification_date
+      start_date
+      status
+      activities {
+        id
+        stream_id
+        date
+        action
+        status
+        resolution
+        reference_id
+        container_name
+        isUserActivity
+        public
+        session_id
+        icon_url
+      }
+    }
+  }
+}

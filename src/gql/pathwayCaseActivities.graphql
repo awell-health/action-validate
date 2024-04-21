@@ -1,0 +1,53 @@
+query PathwayCaseActivities($pathway_case_id: String!) {
+  pathwayCaseActivities(pathway_case_id: $pathway_case_id) {
+    code
+    success
+    activities {
+      id
+      stream_id
+      date
+      action
+      status
+      resolution
+      reference_id
+      container_name
+      isUserActivity
+      public
+      session_id
+      icon_url
+      sub_activities {
+        id
+        date
+        action
+        error
+        error_category
+        object {
+          type
+          id
+          name
+          email
+          preferred_language
+        }
+      }
+      object {
+        type
+        id
+        name
+        email
+        preferred_language
+      }
+      indirect_object {
+        type
+        id
+        name
+        email
+        preferred_language
+      }
+      subject {
+        id
+        type
+        name
+      }
+    }
+  }
+}
