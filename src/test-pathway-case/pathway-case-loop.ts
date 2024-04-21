@@ -1,9 +1,4 @@
-import {
-  Activities,
-  createCase,
-  getCases,
-  getPathwayCaseActivities
-} from '../api/cases'
+import { Activities, createCase, getPathwayCaseActivities } from '../api/cases'
 import { getClient } from '../api/client'
 import {
   ActivityType,
@@ -14,11 +9,18 @@ import * as core from '@actions/core'
 import controller from '../abort'
 import { ActivityAction, ActivityStatus } from '../gql/types'
 import { handleActivity } from './handle-activity'
-import { ActiveActivity } from './ActiveActivity'
+import { ActiveActivity } from './active-activity'
 import { validateActivities } from './validate-activities'
 
+type RunPathwayCasePayload = {
+  title: string
+  success: boolean
+}
+
 export const runPathwayCase = (careflowId: string) => {
-  const runCaseWithSignal = async (config: PathwayCaseConfig): Promise<any> => {
+  const runCaseWithSignal = async (
+    config: PathwayCaseConfig
+  ): Promise<RunPathwayCasePayload> => {
     core.info(`running pathway case: ${config.title}`)
     const pathwayCase = await createCase({ careflowId, config })
     const sdk = getClient(controller.signal)
@@ -39,7 +41,7 @@ export const runPathwayCase = (careflowId: string) => {
         await Promise.all(
           filteredActivities
             .map(a => new ActiveActivity(a))
-            .map(a => handleActivity(a, config))
+            .map(async a => await handleActivity(a, config))
         )
         await new Promise(resolve => setTimeout(resolve, 750))
       }
@@ -48,7 +50,9 @@ export const runPathwayCase = (careflowId: string) => {
       /**
        * Once the care flow is complete, we validate the logic
        */
-      config.validate.forEach(v => validateActivities(v, activities))
+      for (const v of config.validate) {
+        validateActivities(v, activities)
+      }
       return { title: pathwayCase.title, success: true }
     } catch (err) {
       if (err instanceof Error) {

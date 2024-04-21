@@ -1,6 +1,5 @@
 import { getClient, fromGraphQLFailure } from './client'
 import { PathwayCaseConfig } from '../config'
-import { PathwayCase } from '../gql/types'
 
 export const getCases = async (careflowId: string) => {
   const cases = await getClient().PathwayCases({

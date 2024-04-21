@@ -1,6 +1,4 @@
-import { FormResponseInput, QuestionResponseInput } from 'src/gql/types'
 import { fromGraphQLFailure, getClient } from './client'
-import * as z from 'zod'
 import { FormResponseInputSchema, SubmitFormParams } from './types'
 
 export const submitFormResponse = async (opts: SubmitFormParams) => {
@@ -15,6 +13,9 @@ export const submitFormResponse = async (opts: SubmitFormParams) => {
       subject
     }
   })
+  if (!resp.submitFormResponse.success) {
+    throw fromGraphQLFailure(resp.submitFormResponse)
+  }
 }
 
 export const getForm = async (formId: string) => {

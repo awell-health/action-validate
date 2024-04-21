@@ -35,7 +35,7 @@ export const ChecklistInputSchema = z
 
 export type SubmitChecklistParams = z.input<typeof ChecklistInputSchema>
 
-function careflowToPathwayCase<T = {}>(
+function careflowToPathwayCase<T>(
   d: {
     careflow_id: string
     activity_id: string
@@ -44,7 +44,7 @@ function careflowToPathwayCase<T = {}>(
 ) {
   const { careflow_id, ...rest } = d
   return {
-    pathway_case_id: d.careflow_id,
+    pathway_case_id: careflow_id,
     ...rest
   }
 }

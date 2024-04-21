@@ -1,7 +1,6 @@
-import { coreKnownTags } from 'node_modules/yaml/dist/schema/tags'
 import { type PathwayCaseConfig } from '../config'
 import { ActivityObjectType } from '../gql/types'
-import { ActiveActivity } from './ActiveActivity'
+import { ActiveActivity } from './active-activity'
 import * as core from '@actions/core'
 
 export async function handleActivity(

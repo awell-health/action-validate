@@ -4,12 +4,14 @@ import * as path from 'path'
 import z from 'zod'
 import { ActivityAction, ActivityObjectType } from './gql/types'
 
+// eslint-disable-next-line no-shadow
 export enum ActivityType {
   FORM = 'form',
   CHECKLIST = 'checklist',
   CAREFLOW = 'careflow',
   STEP = 'step'
 }
+
 const ActivityTypeSchema = z
   .nativeEnum(ActivityObjectType)
   .transform(d => {

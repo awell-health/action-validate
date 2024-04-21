@@ -1,4 +1,9 @@
+__mocks__/
+__tests__/
+.jest/
 lib/
 dist/
 node_modules/
 coverage/
+src/gql/types.ts
+codegen.ts

@@ -9,8 +9,8 @@ export const getClient = (signal?: AbortSignal) => {
     headers: {
       apikey: env.AWELL_API_KEY
     },
-    fetch: (url, options) =>
-      fetch(url, { ...options, signal: signal ?? controller.signal }),
+    fetch: async (url, options) =>
+      await fetch(url, { ...options, signal: signal ?? controller.signal }),
     errorPolicy: 'none'
   })
   return getSdk(cli)
