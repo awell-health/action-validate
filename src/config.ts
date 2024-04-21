@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import * as path from 'path'
 import z from 'zod'
 import { ActivityAction, ActivityObjectType } from './gql/types'
+import { isEmpty } from 'lodash'
 
 // eslint-disable-next-line no-shadow
 export enum ActivityType {
@@ -83,6 +84,9 @@ const ConfigSchema = z.object({
 })
 
 export const parseConfig = (filename: string): ConfigType => {
+  if (isEmpty(filename)) {
+    throw new Error('filename is empty')
+  }
   const filePath = path.join(process.cwd(), filename)
   try {
     const rawConfig = YAML.parse(readFileSync(filePath, 'utf8'))

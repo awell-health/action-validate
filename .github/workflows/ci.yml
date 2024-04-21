@@ -53,12 +53,14 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
-        id: test-action
-        uses: ./
-        with:
-          milliseconds: 2000
+      # TODO: Add support for bypassing API for local testing
+      # - name: Test Local Action
+      #   id: test-action
+      #   uses: ./
+      #   with:
+      #     api_key: test
+      #     careflow_id:
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+      # - name: Print Output
+      #   id: output
+      #   run: echo "${{ steps.test-action.outputs.time }}"
