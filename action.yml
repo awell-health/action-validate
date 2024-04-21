@@ -1,24 +1,32 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-
-# Add your action's branding here. This will appear on the GitHub Marketplace.
-branding:
-  icon: 'heart'
-  color: 'red'
+name: 'Careflow Validation'
+description: Validate cases using this action
+author: Awell Health
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  filename:
+    description: 'The link to the .yaml file with the cases with instructions'
     required: true
-    default: '1000'
+    default: careflow-validation.yaml
+  api_key:
+    description: 'The Awell API key to use for authentication.'
+    required: true
+  awell_endpoint:
+    description: 'The endpoint to use for the GraphQL API.'
+    required: true
+    default: https://api.sandbox.awellhealth.com/design/m2m/graphql
+  careflow_id:
+    description: 'The ID of the careflow to validate.'
+    required: true
+  timeout_ms:
+    description: 'Timeout to fail in ms'
+    default: '60000'
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  results:
+    description: 'The results of the test cases'
 
 runs:
   using: node20
-  main: dist/index.js
+  main: 'dist/index.js'

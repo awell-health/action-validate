@@ -92505,6 +92505,7 @@ const fs_1 = __nccwpck_require__(57147);
 const path = __importStar(__nccwpck_require__(71017));
 const zod_1 = __importDefault(__nccwpck_require__(63301));
 const types_1 = __nccwpck_require__(22311);
+const lodash_1 = __nccwpck_require__(90250);
 // eslint-disable-next-line no-shadow
 var ActivityType;
 (function (ActivityType) {
@@ -92579,6 +92580,9 @@ const ConfigSchema = zod_1.default.object({
     cases: zod_1.default.array(PathwayCaseConfigSchema)
 });
 const parseConfig = (filename) => {
+    if ((0, lodash_1.isEmpty)(filename)) {
+        throw new Error('filename is empty');
+    }
     const filePath = path.join(process.cwd(), filename);
     try {
         const rawConfig = YAML.parse((0, fs_1.readFileSync)(filePath, 'utf8'));
