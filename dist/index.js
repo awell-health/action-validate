@@ -92334,7 +92334,7 @@ const core = __importStar(__nccwpck_require__(42186));
 const environment_1 = __importDefault(__nccwpck_require__(86869));
 const abort_1 = __importDefault(__nccwpck_require__(7494));
 const getClient = (signal) => {
-    const cli = new graphql_request_1.GraphQLClient(environment_1.default.AWELL_ENDPOINT, {
+    const cli = new graphql_request_1.GraphQLClient(environment_1.default.AWELL_ENVIRONMENT, {
         headers: {
             apikey: environment_1.default.AWELL_API_KEY
         },
@@ -92644,7 +92644,34 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(42186));
 const zod_1 = __importDefault(__nccwpck_require__(63301));
 const EnvSchema = zod_1.default.object({
-    AWELL_ENDPOINT: zod_1.default.string(),
+    AWELL_ENVIRONMENT: zod_1.default.string().transform(environment => {
+        switch (environment) {
+            case 'local': {
+                return 'http://localhost:8120/design/m2m/graphql';
+            }
+            case 'development': {
+                return 'https://api.development.awellhealth.com/design/m2m/graphql';
+            }
+            case 'staging': {
+                return 'https://api.staging.awellhealth.com/design/m2m/graphql';
+            }
+            case 'sandbox': {
+                return 'https://api.sandbox.awellhealth.com/design/m2m/graphql';
+            }
+            case 'production': {
+                return 'https://api.production.awellhealth.com/design/m2m/graphql';
+            }
+            case 'production-us': {
+                return 'https://api.production-us.awellhealth.com/design/m2m/graphql';
+            }
+            case 'production-uk': {
+                return 'https://api.production-uk.awellhealth.com/design/m2m/graphql';
+            }
+            default: {
+                throw new Error(`Unknown environment: ${environment}`);
+            }
+        }
+    }),
     AWELL_API_KEY: zod_1.default.string(),
     CAREFLOW_ID: zod_1.default.string(),
     FILENAME: zod_1.default.string(),
@@ -92653,7 +92680,7 @@ const EnvSchema = zod_1.default.object({
     })
 });
 const rawEnv = {
-    AWELL_ENDPOINT: core.getInput('awell_endpoint'),
+    AWELL_ENVIRONMENT: core.getInput('awell_environment'),
     AWELL_API_KEY: core.getInput('api_key'),
     CAREFLOW_ID: core.getInput('careflow_id'),
     FILENAME: core.getInput('filename'),

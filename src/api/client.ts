@@ -5,7 +5,7 @@ import env from '../environment'
 import controller from '../abort'
 
 export const getClient = (signal?: AbortSignal) => {
-  const cli = new GraphQLClient(env.AWELL_ENDPOINT, {
+  const cli = new GraphQLClient(env.AWELL_ENVIRONMENT, {
     headers: {
       apikey: env.AWELL_API_KEY
     },

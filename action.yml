@@ -11,10 +11,10 @@ inputs:
   api_key:
     description: 'The Awell API key to use for authentication.'
     required: true
-  awell_endpoint:
+  awell_environment:
     description: 'The endpoint to use for the GraphQL API.'
     required: true
-    default: https://api.sandbox.awellhealth.com/design/m2m/graphql
+    default: development
   careflow_id:
     description: 'The ID of the careflow to validate.'
     required: true
