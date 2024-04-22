@@ -45,7 +45,7 @@ const FormQuestionConfigSchema = z.object({
 })
 const FormConfigSchema = z.object({
   type: z.literal(ActivityType.FORM),
-  key: z.string(),
+  name: z.string(),
   questions: z.array(FormQuestionConfigSchema)
 })
 const ChecklistConfigSchema = z.object({

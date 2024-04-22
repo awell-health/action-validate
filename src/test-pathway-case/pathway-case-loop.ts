@@ -50,10 +50,11 @@ export const runPathwayCase = (careflowId: string) => {
       /**
        * Once the care flow is complete, we validate the logic
        */
+      const validations = [] as boolean[]
       for (const v of config.validate) {
-        validateActivities(v, activities)
+        validations.push(validateActivities(v, activities))
       }
-      return { title: pathwayCase.title, success: true }
+      return { title: pathwayCase.title, success: validations.every(Boolean) }
     } catch (err) {
       if (err instanceof Error) {
         core.error(err)

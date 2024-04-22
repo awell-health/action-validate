@@ -8,10 +8,10 @@ export async function run(): Promise<void> {
   const { cases } = parseConfig(env.FILENAME)
   try {
     const resp = await Promise.all(cases.map(runPathwayCase(env.CAREFLOW_ID)))
+    core.info(`Results: ${JSON.stringify(resp)}`)
     core.setOutput('results', JSON.stringify(resp))
-    if (!resp.every(Boolean)) {
+    if (!resp.map(r => r.success).every(Boolean)) {
       core.setFailed('One or more cases failed')
-      core.error(JSON.stringify(resp))
       process.exit(1)
     }
   } catch (err) {

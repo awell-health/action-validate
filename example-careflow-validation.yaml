@@ -4,7 +4,7 @@ cases:
       This is a test case that checks if the logic is correct.
     activities:
       - type: form
-        key: phq9
+        name: phq9
         questions:
           - key: PHQ9_Q01
             value: '0'
@@ -38,6 +38,6 @@ cases:
         action: COMPLETE
       - type: step
         name: PHQ-9 over 10
-        action: DISCARDED
+        action: COMPLETE
       - type: careflow
         action: COMPLETE

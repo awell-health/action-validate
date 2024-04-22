@@ -9,7 +9,10 @@ export async function handleActivity(
 ) {
   const cfg = a.findMatchingConfig(config.activities)
   if (!cfg) {
-    console.error({ a, config_activities: config.activities })
+    console.error({
+      activity: JSON.stringify(a),
+      config_activities: config.activities
+    })
     throw new Error('unable to match config')
   }
   switch (a.activity.object.type) {

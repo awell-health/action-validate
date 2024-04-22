@@ -20,13 +20,7 @@ export class ActiveActivity {
         return false
       }
       switch (c.type) {
-        case ActivityType.FORM: {
-          if (c.key !== this.activity.object.name) {
-            return false
-          } else {
-            return true
-          }
-        }
+        case ActivityType.FORM:
         case ActivityType.CHECKLIST: {
           if (c.name !== this.activity.object.name) {
             return false

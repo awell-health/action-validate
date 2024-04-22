@@ -92545,7 +92545,7 @@ const FormQuestionConfigSchema = zod_1.default.object({
 });
 const FormConfigSchema = zod_1.default.object({
     type: zod_1.default.literal(ActivityType.FORM),
-    key: zod_1.default.string(),
+    name: zod_1.default.string(),
     questions: zod_1.default.array(FormQuestionConfigSchema)
 });
 const ChecklistConfigSchema = zod_1.default.object({
@@ -93419,10 +93419,10 @@ async function run() {
     const { cases } = (0, config_1.parseConfig)(environment_1.default.FILENAME);
     try {
         const resp = await Promise.all(cases.map((0, pathway_case_loop_1.runPathwayCase)(environment_1.default.CAREFLOW_ID)));
+        core.info(`Results: ${JSON.stringify(resp)}`);
         core.setOutput('results', JSON.stringify(resp));
-        if (!resp.every(Boolean)) {
+        if (!resp.map(r => r.success).every(Boolean)) {
             core.setFailed('One or more cases failed');
-            core.error(JSON.stringify(resp));
             process.exit(1);
         }
     }
@@ -93471,14 +93471,7 @@ class ActiveActivity {
                 return false;
             }
             switch (c.type) {
-                case config_1.ActivityType.FORM: {
-                    if (c.key !== this.activity.object.name) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                }
+                case config_1.ActivityType.FORM:
                 case config_1.ActivityType.CHECKLIST: {
                     if (c.name !== this.activity.object.name) {
                         return false;
@@ -93576,7 +93569,10 @@ const core = __importStar(__nccwpck_require__(42186));
 async function handleActivity(a, config) {
     const cfg = a.findMatchingConfig(config.activities);
     if (!cfg) {
-        console.error({ a, config_activities: config.activities });
+        console.error({
+            activity: JSON.stringify(a),
+            config_activities: config.activities
+        });
         throw new Error('unable to match config');
     }
     switch (a.activity.object.type) {
@@ -93669,10 +93665,11 @@ const runPathwayCase = (careflowId) => {
             /**
              * Once the care flow is complete, we validate the logic
              */
+            const validations = [];
             for (const v of config.validate) {
-                (0, validate_activities_1.validateActivities)(v, activities);
+                validations.push((0, validate_activities_1.validateActivities)(v, activities));
             }
-            return { title: pathwayCase.title, success: true };
+            return { title: pathwayCase.title, success: validations.every(Boolean) };
         }
         catch (err) {
             if (err instanceof Error) {
@@ -93735,7 +93732,7 @@ exports.validateActivities = void 0;
 const config_1 = __nccwpck_require__(96373);
 const core = __importStar(__nccwpck_require__(42186));
 const validateActivities = (v, activities) => {
-    core.debug(`validating ${v.type} ${v.action}`);
+    core.debug(`validating ${v.type}:${v.action}`);
     const activityToValidate = activities.find(a => {
         if (a.object?.type && (0, config_1.toActivityType)(a.object.type) !== v.type) {
             return false;
@@ -93749,7 +93746,12 @@ const validateActivities = (v, activities) => {
         return true;
     });
     if (!activityToValidate) {
-        throw new Error('activity to validate not found');
+        core.warning(`Unable to find activity ${JSON.stringify(v)} to validate... failing`);
+        return false;
+    }
+    else {
+        core.info(`Validated ${JSON.stringify(v)} successfully`);
+        return true;
     }
 };
 exports.validateActivities = validateActivities;

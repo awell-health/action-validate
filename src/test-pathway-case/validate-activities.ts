@@ -5,8 +5,8 @@ import * as core from '@actions/core'
 export const validateActivities = (
   v: ValidateConfig,
   activities: Activities
-) => {
-  core.debug(`validating ${v.type} ${v.action}`)
+): boolean => {
+  core.debug(`validating ${v.type}:${v.action}`)
   const activityToValidate = activities.find(a => {
     if (a.object?.type && toActivityType(a.object.type) !== v.type) {
       return false
@@ -20,6 +20,12 @@ export const validateActivities = (
     return true
   })
   if (!activityToValidate) {
-    throw new Error('activity to validate not found')
+    core.warning(
+      `Unable to find activity ${JSON.stringify(v)} to validate... failing`
+    )
+    return false
+  } else {
+    core.info(`Validated ${JSON.stringify(v)} successfully`)
+    return true
   }
 }
