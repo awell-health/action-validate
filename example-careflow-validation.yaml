@@ -38,6 +38,15 @@ cases:
         action: COMPLETE
       - type: step
         name: PHQ-9 over 10
-        action: COMPLETE
+        action: DISCARDED
       - type: careflow
         action: COMPLETE
+      - type: step
+        name: Baseline Datapoint
+        action: ACTIVATE
+      - type: track
+        name: triggered by a datapoint
+        action: ACTIVATE
+    baseline_datapoints:
+      - definition_id: aqhlL6q_ywoY
+        value: any string will do...

@@ -7,7 +7,11 @@ import {
 } from '../config'
 import * as core from '@actions/core'
 import controller from '../abort'
-import { ActivityAction, ActivityStatus } from '../gql/types'
+import {
+  ActivityAction,
+  ActivityObjectType,
+  ActivityStatus
+} from '../gql/types'
 import { handleActivity } from './handle-activity'
 import { ActiveActivity } from './active-activity'
 import { validateActivities } from './validate-activities'
@@ -26,7 +30,11 @@ export const runPathwayCase = (careflowId: string) => {
     const sdk = getClient(controller.signal)
     try {
       await sdk.StartPreview({
-        input: { pathway_id: careflowId, pathway_case_id: pathwayCase.id }
+        input: {
+          pathway_id: careflowId,
+          pathway_case_id: pathwayCase.id,
+          baseline_info: config.baseline_datapoints
+        }
       })
       let activities: Activities = []
 
@@ -73,6 +81,9 @@ export const runPathwayCase = (careflowId: string) => {
 const isActive = (activity: Activities[0]) =>
   activity.status === ActivityStatus.Active &&
   activity.indirect_object !== null &&
+  // we don't want to handle evaluated rules or reminders
+  activity.indirect_object?.type !== ActivityObjectType.EvaluatedRule &&
+  activity.indirect_object?.type !== ActivityObjectType.Reminder &&
   Object.values(ActivityType)
     .map(toActivityObjectType)
     .includes(activity.object.type)

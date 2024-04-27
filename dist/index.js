@@ -92513,6 +92513,7 @@ var ActivityType;
     ActivityType["CHECKLIST"] = "checklist";
     ActivityType["CAREFLOW"] = "careflow";
     ActivityType["STEP"] = "step";
+    ActivityType["TRACK"] = "track";
 })(ActivityType || (exports.ActivityType = ActivityType = {}));
 const ActivityTypeSchema = zod_1.default
     .nativeEnum(types_1.ActivityObjectType)
@@ -92561,20 +92562,42 @@ const ValidateStepConfigSchema = zod_1.default.object({
     name: zod_1.default.string(),
     action: zod_1.default.nativeEnum(types_1.ActivityAction)
 });
+const ValidateTrackConfigSchema = zod_1.default.object({
+    type: zod_1.default.literal(ActivityType.TRACK),
+    name: zod_1.default.string(),
+    action: zod_1.default.nativeEnum(types_1.ActivityAction)
+});
 const ValidateCareflowConfigSchema = zod_1.default.object({
     type: zod_1.default.literal(ActivityType.CAREFLOW),
     action: zod_1.default.nativeEnum(types_1.ActivityAction)
 });
 const ValidateConfigSchema = zod_1.default.union([
     ValidateStepConfigSchema,
+    ValidateTrackConfigSchema,
     ValidateCareflowConfigSchema
 ]);
+const BaselineDatapointSchema = zod_1.default.object({
+    definition_id: zod_1.default.string(),
+    value: zod_1.default.string()
+});
 const PathwayCaseConfigSchema = zod_1.default.object({
     title: zod_1.default.string(),
     description: zod_1.default.string(),
     overwrite: zod_1.default.boolean().optional().default(true),
     activities: zod_1.default.array(ActivitiesConfigSchema),
-    validate: zod_1.default.array(ValidateConfigSchema)
+    validate: zod_1.default.array(ValidateConfigSchema),
+    baseline_datapoints: zod_1.default
+        .array(BaselineDatapointSchema)
+        .optional()
+        .default([])
+        .transform(d => {
+        return d.map(b => {
+            return {
+                data_point_definition_id: b.definition_id,
+                value: b.value
+            };
+        });
+    })
 });
 const ConfigSchema = zod_1.default.object({
     cases: zod_1.default.array(PathwayCaseConfigSchema)
@@ -93672,7 +93695,11 @@ const runPathwayCase = (careflowId) => {
         const sdk = (0, client_1.getClient)(abort_1.default.signal);
         try {
             await sdk.StartPreview({
-                input: { pathway_id: careflowId, pathway_case_id: pathwayCase.id }
+                input: {
+                    pathway_id: careflowId,
+                    pathway_case_id: pathwayCase.id,
+                    baseline_info: config.baseline_datapoints
+                }
             });
             let activities = [];
             /**
@@ -93716,6 +93743,9 @@ const runPathwayCase = (careflowId) => {
 exports.runPathwayCase = runPathwayCase;
 const isActive = (activity) => activity.status === types_1.ActivityStatus.Active &&
     activity.indirect_object !== null &&
+    // we don't want to handle evaluated rules or reminders
+    activity.indirect_object?.type !== types_1.ActivityObjectType.EvaluatedRule &&
+    activity.indirect_object?.type !== types_1.ActivityObjectType.Reminder &&
     Object.values(config_1.ActivityType)
         .map(config_1.toActivityObjectType)
         .includes(activity.object.type);
@@ -93768,6 +93798,9 @@ const validateActivities = (v, activities) => {
             return false;
         }
         if (v.type === config_1.ActivityType.STEP && a.object.name !== v.name) {
+            return false;
+        }
+        if (v.type === config_1.ActivityType.TRACK && a.object.name !== v.name) {
             return false;
         }
         return true;

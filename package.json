@@ -1,7 +1,7 @@
 {
   "name": "action-validate",
   "description": "GitHub action for careflow validation",
-  "version": "0.0.1",
+  "version": "1.0.0-beta2",
   "author": "",
   "private": true,
   "homepage": "https://github.com/awell-health/action-validate",
