@@ -17,6 +17,9 @@ export const validateActivities = (
     if (v.type === ActivityType.STEP && a.object.name !== v.name) {
       return false
     }
+    if (v.type === ActivityType.TRACK && a.object.name !== v.name) {
+      return false
+    }
     return true
   })
   if (!activityToValidate) {

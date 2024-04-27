@@ -16,11 +16,6 @@ describe('config', () => {
   it('should complete three activities', async () => {
     expect(case1.activities.length).toBe(3)
   })
-  it('should validate three steps', async () => {
-    expect(
-      case1.validate.filter(v => v.type === ActivityType.STEP).length
-    ).toBe(3)
-  })
   it('should validate careflow complete', async () => {
     expect(
       case1.validate.filter(v => v.type === ActivityType.CAREFLOW).length

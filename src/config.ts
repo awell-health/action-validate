@@ -10,7 +10,8 @@ export enum ActivityType {
   FORM = 'form',
   CHECKLIST = 'checklist',
   CAREFLOW = 'careflow',
-  STEP = 'step'
+  STEP = 'step',
+  TRACK = 'track'
 }
 
 const ActivityTypeSchema = z
@@ -62,21 +63,45 @@ const ValidateStepConfigSchema = z.object({
   name: z.string(),
   action: z.nativeEnum(ActivityAction)
 })
+const ValidateTrackConfigSchema = z.object({
+  type: z.literal(ActivityType.TRACK),
+  name: z.string(),
+  action: z.nativeEnum(ActivityAction)
+})
+
 const ValidateCareflowConfigSchema = z.object({
   type: z.literal(ActivityType.CAREFLOW),
   action: z.nativeEnum(ActivityAction)
 })
 const ValidateConfigSchema = z.union([
   ValidateStepConfigSchema,
+  ValidateTrackConfigSchema,
   ValidateCareflowConfigSchema
 ])
+
+const BaselineDatapointSchema = z.object({
+  definition_id: z.string(),
+  value: z.string()
+})
 
 const PathwayCaseConfigSchema = z.object({
   title: z.string(),
   description: z.string(),
   overwrite: z.boolean().optional().default(true),
   activities: z.array(ActivitiesConfigSchema),
-  validate: z.array(ValidateConfigSchema)
+  validate: z.array(ValidateConfigSchema),
+  baseline_datapoints: z
+    .array(BaselineDatapointSchema)
+    .optional()
+    .default([])
+    .transform(d => {
+      return d.map(b => {
+        return {
+          data_point_definition_id: b.definition_id,
+          value: b.value
+        }
+      })
+    })
 })
 
 const ConfigSchema = z.object({
