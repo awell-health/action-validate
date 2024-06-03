@@ -75,7 +75,7 @@
     "lodash": "^4.17.21",
     "playwright": "^1.43.1",
     "ramda": "^0.29.1",
-    "yaml": "^2.4.1",
+    "yaml": "^2.4.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
