@@ -1,5 +1,11 @@
 import { Activities } from '../api/cases'
-import { ActivityType, ValidateConfig, toActivityType } from '../config'
+import {
+  ActivityType,
+  ValidateConfig,
+  toActivityType,
+  ActivityActionExtension,
+  ActivityAction
+} from '../config'
 import * as core from '@actions/core'
 
 export const validateActivities = (
@@ -18,11 +24,17 @@ export const validateActivities = (
       return false
     }
     if (v.type === ActivityType.TRACK && a.object.name !== v.name) {
+      if (shouldNotHaveTriggered(v)) {
+        core.warning(
+          `Track ${v.name} should not be triggered, but an activity was found, failing`
+        )
+        return false
+      }
       return false
     }
     return true
   })
-  if (!activityToValidate) {
+  if (!activityToValidate && !shouldNotHaveTriggered(v)) {
     core.warning(
       `Unable to find activity ${JSON.stringify(v)} to validate... failing`
     )
@@ -31,4 +43,10 @@ export const validateActivities = (
     core.info(`Validated ${JSON.stringify(v)} successfully`)
     return true
   }
+}
+
+function shouldNotHaveTriggered(v: ValidateConfig): boolean {
+  return (
+    v.type === ActivityType.TRACK && v.action === ActivityAction.NOT_TRIGGERED
+  )
 }

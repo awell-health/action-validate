@@ -22,11 +22,13 @@ export class ActiveActivity {
       switch (c.type) {
         case ActivityType.FORM:
         case ActivityType.CHECKLIST: {
-          if (c.name !== this.activity.object.name) {
-            return false
-          } else {
-            return true
-          }
+          return c.name === this.activity.object.name
+        }
+        case ActivityType.EXTENSION: {
+          return (
+            c.extension_name === this.activity.indirect_object?.name &&
+            c.action_name === this.activity.object.name
+          )
         }
       }
     })
@@ -79,4 +81,11 @@ export class ActiveActivity {
       careflow_id: this.activity.stream_id
     })
   }
+
+  // async completeExtension(config: HandleActivityConfig) {
+  //   if (config.type !== ActivityType.EXTENSION) {
+  //     throw new Error('Can only use an extension config for a submit extension')
+  //   }
+  //   throw new Error('not implemented -> we don't complete extension activities in design... only orchestration')
+  // }
 }

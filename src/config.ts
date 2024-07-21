@@ -2,8 +2,30 @@ import * as YAML from 'yaml'
 import { readFileSync } from 'fs'
 import * as path from 'path'
 import z from 'zod'
-import { ActivityAction, ActivityObjectType } from './gql/types'
+import {
+  ActivityAction as BaseActivityAction,
+  ActivityObjectType
+} from './gql/types'
 import { isEmpty } from 'lodash'
+
+/**
+ * TODO: A hack to extend an enum
+ */
+function combineEnums(...enums: any[]): (typeof enums)[number] {
+  return enums.reduce((acc, curr) => {
+    Object.keys(curr).forEach(key => {
+      acc[key] = curr[key as keyof typeof curr]
+    })
+    return acc
+  }, {} as any)
+}
+export enum ActivityActionExtension {
+  NOT_TRIGGERED = 'NOT_TRIGGERED'
+}
+export const ActivityAction = combineEnums(
+  BaseActivityAction,
+  ActivityActionExtension
+)
 
 // eslint-disable-next-line no-shadow
 export enum ActivityType {
@@ -11,7 +33,8 @@ export enum ActivityType {
   CHECKLIST = 'checklist',
   CAREFLOW = 'careflow',
   STEP = 'step',
-  TRACK = 'track'
+  TRACK = 'track',
+  EXTENSION = 'extension'
 }
 
 const ActivityTypeSchema = z
@@ -20,6 +43,9 @@ const ActivityTypeSchema = z
     switch (d) {
       case ActivityObjectType.Pathway: {
         return ActivityType.CAREFLOW
+      }
+      case ActivityObjectType.PluginAction: {
+        return ActivityType.EXTENSION
       }
       default:
         return d.toLowerCase() as ActivityType
@@ -32,6 +58,9 @@ const ActivityObjectTypeSchema = z
     switch (d) {
       case ActivityType.CAREFLOW: {
         return ActivityObjectType.Pathway
+      }
+      case ActivityType.EXTENSION: {
+        return ActivityObjectType.PluginAction
       }
       default: {
         return d.toUpperCase() as ActivityObjectType
@@ -53,9 +82,23 @@ const ChecklistConfigSchema = z.object({
   type: z.literal(ActivityType.CHECKLIST),
   name: z.string()
 })
+const ExtentionConfigSchema = z.object({
+  type: z.literal(ActivityType.EXTENSION),
+  extension_name: z.string(),
+  action_name: z.string(),
+  data_points: z
+    .array(
+      z.object({
+        key: z.string(),
+        value: z.string()
+      })
+    )
+    .optional()
+})
 const ActivitiesConfigSchema = z.union([
   FormConfigSchema,
-  ChecklistConfigSchema
+  ChecklistConfigSchema,
+  ExtentionConfigSchema
 ])
 
 const ValidateStepConfigSchema = z.object({
