@@ -1,3 +1,8 @@
-const controller = new AbortController()
+let controller: AbortController
 
-export default controller
+export function getController() {
+  if (!controller) {
+    controller = new AbortController()
+  }
+  return controller
+}

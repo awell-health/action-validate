@@ -6,7 +6,6 @@ import {
   type PathwayCaseConfig
 } from '../config'
 import * as core from '@actions/core'
-import controller from '../abort'
 import {
   ActivityAction,
   ActivityObjectType,
@@ -27,7 +26,7 @@ export const runPathwayCase = (careflowId: string) => {
   ): Promise<RunPathwayCasePayload> => {
     core.info(`running pathway case: ${config.title}`)
     const pathwayCase = await createCase({ careflowId, config })
-    const sdk = getClient(controller.signal)
+    const sdk = getClient()
     try {
       await sdk.StartPreview({
         input: {

@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { parseConfig } from './config'
 import { runPathwayCase } from './test-pathway-case/pathway-case-loop'
 import env from './environment'
-import controller from './abort'
+import { getController } from './abort'
 
 export async function run(): Promise<void> {
   const { cases } = parseConfig(env.FILENAME)
@@ -15,7 +15,7 @@ export async function run(): Promise<void> {
       process.exit(1)
     }
   } catch (err) {
-    if (controller.signal.aborted) {
+    if (getController().signal.aborted) {
       core.setFailed('Timeout, aborted')
       core.warning('aborted, timeout')
       process.exit(1)

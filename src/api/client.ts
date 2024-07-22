@@ -2,15 +2,15 @@ import { GraphQLClient } from 'graphql-request'
 import { Payload, getSdk } from '../gql/types'
 import * as core from '@actions/core'
 import env from '../environment'
-import controller from '../abort'
+import { getController } from '../abort'
 
-export const getClient = (signal?: AbortSignal) => {
+export const getClient = () => {
   const cli = new GraphQLClient(env.AWELL_ENVIRONMENT, {
     headers: {
       apikey: env.AWELL_API_KEY
     },
     fetch: async (url, options) =>
-      await fetch(url, { ...options, signal: signal ?? controller.signal }),
+      await fetch(url, { ...options, signal: getController().signal }),
     errorPolicy: 'none'
   })
   return getSdk(cli)

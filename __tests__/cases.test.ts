@@ -1,14 +1,14 @@
 import { getCases } from '../src/api/cases'
 import * as client from '../src/api/client'
 import * as core from '@actions/core'
-import controller from '../src/abort'
+import { getController } from '../src/abort'
 import { mockedGetClient } from '../__mocks__/client'
 describe('cases', () => {
   const clientSpy = jest
     .spyOn(client, 'getClient')
     .mockImplementation(mockedGetClient)
   afterEach(() => {
-    controller.abort()
+    getController().abort()
   })
   it('should fetch cases', async () => {
     const careflowId = core.getInput('careflow_id')
