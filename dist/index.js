@@ -92222,8 +92222,15 @@ exports.NEVER = parseUtil_1.INVALID;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const controller = new AbortController();
-exports["default"] = controller;
+exports.getController = void 0;
+let controller;
+function getController() {
+    if (!controller) {
+        controller = new AbortController();
+    }
+    return controller;
+}
+exports.getController = getController;
 
 
 /***/ }),
@@ -92332,13 +92339,13 @@ const graphql_request_1 = __nccwpck_require__(5406);
 const types_1 = __nccwpck_require__(22311);
 const core = __importStar(__nccwpck_require__(42186));
 const environment_1 = __importDefault(__nccwpck_require__(86869));
-const abort_1 = __importDefault(__nccwpck_require__(7494));
-const getClient = (signal) => {
+const abort_1 = __nccwpck_require__(7494);
+const getClient = () => {
     const cli = new graphql_request_1.GraphQLClient(environment_1.default.AWELL_ENVIRONMENT, {
         headers: {
             apikey: environment_1.default.AWELL_API_KEY
         },
-        fetch: async (url, options) => await fetch(url, { ...options, signal: signal ?? abort_1.default.signal }),
+        fetch: async (url, options) => await fetch(url, { ...options, signal: (0, abort_1.getController)().signal }),
         errorPolicy: 'none'
     });
     return (0, types_1.getSdk)(cli);
@@ -93417,9 +93424,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __nccwpck_require__(44227);
 const main_1 = __nccwpck_require__(70399);
-const abort_1 = __importDefault(__nccwpck_require__(7494));
+const abort_1 = __nccwpck_require__(7494);
 const environment_1 = __importDefault(__nccwpck_require__(86869));
-const timeout = setTimeout(() => abort_1.default.abort(), environment_1.default.TIMEOUT_MS);
+const timeout = setTimeout(() => (0, abort_1.getController)().abort(), environment_1.default.TIMEOUT_MS);
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 // eslint-disable-next-line github/no-then
 (0, main_1.run)().then(() => timeout.unref());
@@ -93464,7 +93471,7 @@ const core = __importStar(__nccwpck_require__(42186));
 const config_1 = __nccwpck_require__(96373);
 const pathway_case_loop_1 = __nccwpck_require__(38729);
 const environment_1 = __importDefault(__nccwpck_require__(86869));
-const abort_1 = __importDefault(__nccwpck_require__(7494));
+const abort_1 = __nccwpck_require__(7494);
 async function run() {
     const { cases } = (0, config_1.parseConfig)(environment_1.default.FILENAME);
     try {
@@ -93477,7 +93484,7 @@ async function run() {
         }
     }
     catch (err) {
-        if (abort_1.default.signal.aborted) {
+        if ((0, abort_1.getController)().signal.aborted) {
             core.setFailed('Timeout, aborted');
             core.warning('aborted, timeout');
             process.exit(1);
@@ -93674,16 +93681,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runPathwayCase = void 0;
 const cases_1 = __nccwpck_require__(7347);
 const client_1 = __nccwpck_require__(16780);
 const config_1 = __nccwpck_require__(96373);
 const core = __importStar(__nccwpck_require__(42186));
-const abort_1 = __importDefault(__nccwpck_require__(7494));
 const types_1 = __nccwpck_require__(22311);
 const handle_activity_1 = __nccwpck_require__(84157);
 const active_activity_1 = __nccwpck_require__(38434);
@@ -93692,7 +93695,7 @@ const runPathwayCase = (careflowId) => {
     const runCaseWithSignal = async (config) => {
         core.info(`running pathway case: ${config.title}`);
         const pathwayCase = await (0, cases_1.createCase)({ careflowId, config });
-        const sdk = (0, client_1.getClient)(abort_1.default.signal);
+        const sdk = (0, client_1.getClient)();
         try {
             await sdk.StartPreview({
                 input: {
