@@ -37,5 +37,7 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers-contrib/features/prettier:1": {}
-  }
+  },
+  "runArgs": ["-v", "${localEnv:HOME}/.ssh:/home/node/.ssh:ro"],
+  "postStartCommand": "git config --global --add safe.directory /workspaces/action-validate"
 }
