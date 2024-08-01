@@ -2,14 +2,18 @@ import { getClient, fromGraphQLFailure } from './client'
 import { PathwayCaseConfig } from '../config'
 
 export const getCases = async (careflowId: string) => {
-  const cases = await getClient().PathwayCases({
+  const controller = new AbortController()
+  const cases = await getClient(controller).PathwayCases({
     input: { pathway_id: careflowId }
   })
   return cases
 }
 
 export const getPathwayCaseActivities = async (pathway_case_id: string) => {
-  const resp = await getClient().PathwayCaseActivities({ pathway_case_id })
+  const controller = new AbortController()
+  const resp = await getClient(controller).PathwayCaseActivities({
+    pathway_case_id
+  })
   if (!resp.pathwayCaseActivities?.success) {
     throw fromGraphQLFailure(resp.pathwayCaseActivities)
   }
@@ -24,7 +28,8 @@ export const createCase = async (opts: {
 }) => {
   await new Promise(resolve => setTimeout(resolve, 500))
   const { careflowId: pathway_id, config } = opts
-  const client = getClient()
+  const controller = new AbortController()
+  const client = getClient(controller)
   const resp = await client.CreatePathwayCase({
     input: {
       pathway_id,

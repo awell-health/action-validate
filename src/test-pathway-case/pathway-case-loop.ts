@@ -15,7 +15,7 @@ import { handleActivity } from './handle-activity'
 import { ActiveActivity } from './active-activity'
 import { validateActivities } from './validate-activities'
 
-type RunPathwayCasePayload = {
+export type RunPathwayCasePayload = {
   title: string
   success: boolean
 }
@@ -25,8 +25,9 @@ export const runPathwayCase = (careflowId: string) => {
     config: PathwayCaseConfig
   ): Promise<RunPathwayCasePayload> => {
     core.info(`running pathway case: ${config.title}`)
+    const controller = new AbortController()
     const pathwayCase = await createCase({ careflowId, config })
-    const sdk = getClient()
+    const sdk = getClient(controller)
     try {
       await sdk.StartPreview({
         input: {

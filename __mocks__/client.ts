@@ -4,7 +4,7 @@ import {
   type getSdk
 } from 'src/gql/types'
 
-const mockedSDK = (signal?: AbortSignal) =>
+const mockedSDK = (controller: AbortController) =>
   ({
     CreatePathwayCase(): Promise<CreatePathwayCaseMutation> {
       return Promise.resolve(createPathwayCaseMutation)
@@ -38,7 +38,8 @@ const mockedSDK = (signal?: AbortSignal) =>
     }
   }) as unknown as ReturnType<typeof getSdk>
 
-export const mockedGetClient = (signal?: AbortSignal) => mockedSDK(signal)
+export const mockedGetClient = (controller: AbortController) =>
+  mockedSDK(controller)
 
 const createPathwayCaseMutation: CreatePathwayCaseMutation = {
   createPathwayCase: {

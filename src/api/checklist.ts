@@ -2,7 +2,8 @@ import { fromGraphQLFailure, getClient } from './client'
 import { ChecklistInputSchema, SubmitChecklistParams } from './types'
 
 export const submitChecklist = async (input: SubmitChecklistParams) => {
-  const sdk = getClient()
+  const controller = new AbortController()
+  const sdk = getClient(controller)
   const resp = await sdk.SubmitChecklist({
     input: ChecklistInputSchema.parse(input)
   })

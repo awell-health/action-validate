@@ -7,8 +7,12 @@ describe('cases', () => {
   const clientSpy = jest
     .spyOn(client, 'getClient')
     .mockImplementation(mockedGetClient)
+  let controller: AbortController
+  beforeEach(() => {
+    controller = new AbortController()
+  })
   afterEach(() => {
-    getController().abort()
+    controller.abort()
   })
   it('should fetch cases', async () => {
     const careflowId = core.getInput('careflow_id')
