@@ -1,0 +1,13 @@
+mutation CreatePatient($input: CreatePatientInput) {
+  createPatient(input: $input) {
+    code
+    success
+    patient {
+      id
+      tenant_id
+      profile {
+        last_name
+      }
+    }
+  }
+}

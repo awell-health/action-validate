@@ -1,0 +1,50 @@
+query PathwayActivities($pathway_id: String!) {
+  pathwayActivities(
+    pathway_id: $pathway_id
+    pagination: { count: 1000, offset: 0 }
+  ) {
+    code
+    success
+    activities {
+      id
+      stream_id
+      date
+      action
+      status
+      resolution
+      reference_id
+      container_name
+      isUserActivity
+      public
+      session_id
+      icon_url
+      form_display_mode
+      object {
+        type
+        id
+        name
+        email
+        preferred_language
+      }
+      indirect_object {
+        type
+        id
+        name
+        email
+        preferred_language
+      }
+      form {
+        questions {
+          key
+          id
+          definition_id
+          title
+          dataPointValueType
+          questionType
+          userQuestionType
+          metadata
+        }
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@ import {
   CreatePathwayCaseMutation,
   PathwayCasesQuery,
   type getSdk
-} from 'src/gql/types'
+} from '../src/gql/design-types'
 
 const mockedSDK = (controller: AbortController) =>
   ({
