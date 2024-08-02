@@ -21,6 +21,16 @@ inputs:
   timeout_ms:
     description: 'Timeout to fail in ms'
     default: '60000'
+  e2e:
+    description:
+      'If set to true, it will run using the orchestration engine instead of the
+      preview engine. This setting is useful for end-to-end tests post-release.'
+    default: 'false'
+  leave_dirty:
+    description:
+      'If set to true, it will not clean up the careflow after the test. This
+      setting is useful for debugging.'
+    default: 'false'
 
 # Define your outputs here.
 outputs:

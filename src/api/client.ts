@@ -23,6 +23,9 @@ export const getDesignClient: GetDesignClientType = controller => {
       apikey: env.AWELL_API_KEY
     },
     fetch: async (url, options) => {
+      core.debug(
+        `making request to ${url} with options: ${JSON.stringify(options)}`
+      )
       const prom = fetch(url, { ...options, signal }).finally(() => {
         signal.removeEventListener('abort', () => {})
       })
@@ -41,6 +44,9 @@ export const getOrchestrationClient: GetOrchestrationClientType =
         apikey: env.AWELL_API_KEY
       },
       fetch: async (url, options) => {
+        core.debug(
+          `making request to ${url} with options: ${JSON.stringify(options)}`
+        )
         const prom = fetch(url, { ...options, signal }).finally(() => {
           signal.removeEventListener('abort', () => {})
         })

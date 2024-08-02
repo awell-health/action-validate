@@ -216,11 +216,13 @@ export class OrchestrationPathwayRunner extends PathwayRunner {
     if (this.careflow_id === undefined) {
       throw new Error('careflow_id is undefined')
     }
+    core.debug(`deleting care flow ${this.careflow_id}`)
     await this.sdk().DeletePathway({
       input: {
         pathway_id: this.careflow_id
       }
     })
+    core.debug(`deleting patient ${this.caseId}`)
     await this.sdk().DeletePatient({
       input: {
         patient_id: this.caseId
@@ -236,13 +238,16 @@ export class DesignPathwayRunner extends PathwayRunner {
     this.sdk = () => getDesignClient(this.abort)
   }
   async startCase() {
-    await this.sdk().StartPreview({
+    const resp = await this.sdk().StartPreview({
       input: {
         pathway_id: this.careflowDefinitionId,
         pathway_case_id: this.caseId,
         baseline_info: this.config.baseline_datapoints
       }
     })
+    if (!resp.startPreview.success) {
+      throw new Error('failed to start preview')
+    }
   }
   async getActivities() {
     if (this.caseId === undefined) {

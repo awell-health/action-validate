@@ -42,6 +42,12 @@ const EnvSchema = z
       .transform(
         d =>
           String(d).toLowerCase() === 'true' || String(d).toLowerCase() === '1'
+      ),
+    LEAVE_DIRTY: z
+      .string()
+      .transform(
+        d =>
+          String(d).toLowerCase() === 'true' || String(d).toLowerCase() === '1'
       )
   })
   .transform(data => {
@@ -59,7 +65,8 @@ const rawEnv = {
   CAREFLOW_ID: core.getInput('careflow_id'),
   FILENAME: core.getInput('filename'),
   TIMEOUT_MS: core.getInput('timeout_ms'),
-  IS_E2E: core.getInput('e2e')
+  IS_E2E: core.getInput('e2e'),
+  LEAVE_DIRTY: core.getInput('leave_dirty')
 }
 const env = EnvSchema.parse(rawEnv)
 console.log(env)

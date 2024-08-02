@@ -1,7 +1,7 @@
 query PathwayActivities($pathway_id: String!) {
   pathwayActivities(
     pathway_id: $pathway_id
-    pagination: { count: 1000, offset: 0 }
+    pagination: { count: 500, offset: 0 }
   ) {
     code
     success

@@ -74902,6 +74902,7 @@ const getDesignClient = controller => {
             apikey: environment_1.default.AWELL_API_KEY
         },
         fetch: async (url, options) => {
+            core.debug(`making request to ${url} with options: ${JSON.stringify(options)}`);
             const prom = fetch(url, { ...options, signal }).finally(() => {
                 signal.removeEventListener('abort', () => { });
             });
@@ -74919,6 +74920,7 @@ const getOrchestrationClient = controller => {
             apikey: environment_1.default.AWELL_API_KEY
         },
         fetch: async (url, options) => {
+            core.debug(`making request to ${url} with options: ${JSON.stringify(options)}`);
             const prom = fetch(url, { ...options, signal }).finally(() => {
                 signal.removeEventListener('abort', () => { });
             });
@@ -75186,6 +75188,9 @@ const EnvSchema = zod_1.default
     }),
     IS_E2E: zod_1.default
         .string()
+        .transform(d => String(d).toLowerCase() === 'true' || String(d).toLowerCase() === '1'),
+    LEAVE_DIRTY: zod_1.default
+        .string()
         .transform(d => String(d).toLowerCase() === 'true' || String(d).toLowerCase() === '1')
 })
     .transform(data => {
@@ -75202,7 +75207,8 @@ const rawEnv = {
     CAREFLOW_ID: core.getInput('careflow_id'),
     FILENAME: core.getInput('filename'),
     TIMEOUT_MS: core.getInput('timeout_ms'),
-    IS_E2E: core.getInput('e2e')
+    IS_E2E: core.getInput('e2e'),
+    LEAVE_DIRTY: core.getInput('leave_dirty')
 };
 const env = EnvSchema.parse(rawEnv);
 console.log(env);
@@ -76245,7 +76251,7 @@ exports.FormDocument = (0, graphql_tag_1.default) `
     `;
 exports.PathwayActivitiesDocument = (0, graphql_tag_1.default) `
     query PathwayActivities($pathway_id: String!) {
-  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 1000, offset: 0}) {
+  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 500, offset: 0}) {
     code
     success
     activities {
@@ -76646,11 +76652,13 @@ class OrchestrationPathwayRunner extends PathwayRunner {
         if (this.careflow_id === undefined) {
             throw new Error('careflow_id is undefined');
         }
+        core.debug(`deleting care flow ${this.careflow_id}`);
         await this.sdk().DeletePathway({
             input: {
                 pathway_id: this.careflow_id
             }
         });
+        core.debug(`deleting patient ${this.caseId}`);
         await this.sdk().DeletePatient({
             input: {
                 patient_id: this.caseId
@@ -76666,13 +76674,16 @@ class DesignPathwayRunner extends PathwayRunner {
         this.sdk = () => (0, client_1.getDesignClient)(this.abort);
     }
     async startCase() {
-        await this.sdk().StartPreview({
+        const resp = await this.sdk().StartPreview({
             input: {
                 pathway_id: this.careflowDefinitionId,
                 pathway_case_id: this.caseId,
                 baseline_info: this.config.baseline_datapoints
             }
         });
+        if (!resp.startPreview.success) {
+            throw new Error('failed to start preview');
+        }
     }
     async getActivities() {
         if (this.caseId === undefined) {
@@ -76817,11 +76828,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.runPathwayCase = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const active_activity_1 = __nccwpck_require__(713);
 const runner_factory_1 = __nccwpck_require__(2178);
+const environment_1 = __importDefault(__nccwpck_require__(6869));
 const runPathwayCase = ({ careflowDefinitionId, e2e }) => {
     const runCaseWithSignal = async (config) => {
         core.info(`running case: ${config.title}`);
@@ -76856,8 +76871,13 @@ const runPathwayCase = ({ careflowDefinitionId, e2e }) => {
             return { title: runner.config.title, success: false };
         }
         finally {
-            core.debug('cleaning up...');
-            await runner.cleanup();
+            if (environment_1.default.LEAVE_DIRTY) {
+                core.warning(`'leave_dirty' input was set to true: skipping cleanup. case/patient ID: ${runner.caseId}`);
+            }
+            else {
+                core.debug('cleaning up...');
+                await runner.cleanup();
+            }
         }
     };
     return runCaseWithSignal;

@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 
 import { ActiveActivity } from '../active-activity'
 import { RunnerFactory, RunnerFactoryProps } from './runner-factory'
+import env from '../environment'
 
 export type RunPathwayCasePayload = {
   title: string
@@ -51,8 +52,14 @@ export const runPathwayCase = ({
       }
       return { title: runner.config.title, success: false }
     } finally {
-      core.debug('cleaning up...')
-      await runner.cleanup()
+      if (env.LEAVE_DIRTY) {
+        core.warning(
+          `'leave_dirty' input was set to true: skipping cleanup. case/patient ID: ${runner.caseId}`
+        )
+      } else {
+        core.debug('cleaning up...')
+        await runner.cleanup()
+      }
     }
   }
   return runCaseWithSignal
