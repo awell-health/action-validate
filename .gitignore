@@ -102,3 +102,6 @@ __tests__/runner/*
 .idea
 .vscode
 *.code-workspace
+
+# CI
+release_body.md

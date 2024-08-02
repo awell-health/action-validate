@@ -2,3 +2,4 @@ dist/
 node_modules/
 coverage/
 src/gql/*-types.ts
+release_body.md
