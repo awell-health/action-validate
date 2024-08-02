@@ -44,28 +44,35 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
+      - name: Coverage
+        id: npm-coverage
+        run: npm run coverage
+
+      - name: Bump version
+        id: npm-bump
+        run: npm version patch
+
       - name: Bundle
         id: npm-bundle
         run: npm run bundle
 
       - name: Commit and push updated version
-        id: bump_version
+        id: update_tag
         run: |
           echo "$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:'## %H%n%an <%ae>%n%ad%n%s%n%b%n')" > release_body.md
-          yarn version --patch
           new_version=$(cat package.json | jq -r '.version')
           git config --global user.name "Awell CI"
           git config --global user.email "ci@awellhealth.com"
-          git add package.json
-          git commit -m "ci: bump version to $new_version [skip ci]" && git push
-          git tag -a $new_version -m "ci: bump version to $new_version" && git push origin $new_version
+          git add package.json badges/coverage.svg dist/
+          git commit -m "ci: update tag with new version $new_version [skip ci]" && git push
+          git tag -a $new_version -m "ci: update tag with new version $new_version" && git push origin $new_version
           echo "new_version=$new_version" >> "$GITHUB_OUTPUT"
 
       - name: Create release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.CONTENTS_AND_WORKFLOWS_TOKEN }}
-          TAG_NAME: ${{ steps.bump_version.outputs.new_version }}
+          TAG_NAME: ${{ steps.update_tag.outputs.new_version }}
         with:
           tag_name: ${{ env.TAG_NAME }}
           release_name: ${{ env.TAG_NAME }}
