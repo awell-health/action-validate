@@ -55,10 +55,10 @@ jobs:
           git config --global user.email "ci@awellhealth.com"
           npm version patch
           npm run bundle
-          new_version=$(cat package.json | jq -r '.version')
-          git add .
-          git commit -m "ci: update tag with new version $new_version [skip ci]" && git push
-          git tag -a $new_version -m "ci: update tag with new version $new_version" && git push origin $new_version
+          new_version=v$(cat package.json | jq -r '.version')
+          git commit --amend -m "$new_version [skip ci]"
+          git push
+          git tag -a $new_version -m "ci: update tag: $new_version" && git push --tags
           echo "new_version=$new_version" >> "$GITHUB_OUTPUT"
 
       - name: Create release
