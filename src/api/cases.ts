@@ -4,6 +4,7 @@ import {
   getOrchestrationClient
 } from './client'
 import { PathwayCaseConfig } from '../config'
+import { CreatePatientInput } from '../gql/orchestration-types'
 
 export type Activities =
   | Awaited<
@@ -33,12 +34,16 @@ export const createCase = async (opts: {
   return resp.createPathwayCase.pathway_case
 }
 
-export const createPatient = async (opts: { lastName: string }) => {
+export const createPatient = async (opts?: CreatePatientInput) => {
   const controller = new AbortController()
   const client = getOrchestrationClient(controller)
   const resp = await client.CreatePatient({
     input: {
-      last_name: opts.lastName
+      ...(opts?.first_name && { first_name: opts.first_name }),
+      ...(opts?.last_name && { last_name: opts.last_name }),
+      ...(opts?.birth_date && { birth_date: opts.birth_date }),
+      ...(opts?.mobile_phone && { mobile_phone: opts.mobile_phone }),
+      ...(opts?.email && { email: opts.email })
     }
   })
   if (!resp.createPatient.success) {
