@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Tag and Release
 
 on:
   push:
@@ -9,14 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  test-typescript:
-    name: TypeScript Tests
+  tag-and-release:
+    name: Tag and Release
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{secrets.CONTENTS_AND_WORKFLOWS_TOKEN}}
 
       - name: Setup Node.js
         id: setup-node
@@ -45,22 +47,15 @@ jobs:
         id: npm-coverage
         run: npm run coverage
 
-      - name: Bump version
-        id: npm-bump
-        run: npm version patch
-
-      - name: Bundle
-        id: npm-bundle
-        run: npm run bundle
-
       - name: Commit and push updated version
         id: update_tag
         run: |
           echo "$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:'## %H%n%an <%ae>%n%ad%n%s%n%b%n')" > release_body.md
-          new_version=$(cat package.json | jq -r '.version')
           git config --global user.name "Awell CI"
           git config --global user.email "ci@awellhealth.com"
-          git add package.json badges/coverage.svg dist/
+          npm version patch
+          new_version=$(cat package.json | jq -r '.version')
+          git add .
           git commit -m "ci: update tag with new version $new_version [skip ci]" && git push
           git tag -a $new_version -m "ci: update tag with new version $new_version" && git push origin $new_version
           echo "new_version=$new_version" >> "$GITHUB_OUTPUT"
@@ -77,23 +72,23 @@ jobs:
           draft: false
           prerelease: false
 
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
+  # test-action:
+  #   name: GitHub Actions Test
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout
+  #       id: checkout
+  #       uses: actions/checkout@v4
 
-      # TODO: Add support for bypassing API for local testing
-      # - name: Test Local Action
-      #   id: test-action
-      #   uses: ./
-      #   with:
-      #     api_key: test
-      #     careflow_id:
+  # TODO: Add support for bypassing API for local testing
+  # - name: Test Local Action
+  #   id: test-action
+  #   uses: ./
+  #   with:
+  #     api_key: test
+  #     careflow_id:
 
-      # - name: Print Output
-      #   id: output
-      #   run: echo "${{ steps.test-action.outputs.time }}"
+  # - name: Print Output
+  #   id: output
+  #   run: echo "${{ steps.test-action.outputs.time }}"
