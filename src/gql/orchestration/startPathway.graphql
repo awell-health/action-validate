@@ -1,0 +1,7 @@
+mutation StartPathway($input: StartPathwayInput!) {
+  startPathway(input: $input) {
+    code
+    success
+    pathway_id
+  }
+}

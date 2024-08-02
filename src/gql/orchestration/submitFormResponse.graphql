@@ -1,0 +1,20 @@
+mutation SubmitFormResponse($input: SubmitFormResponseInput!) {
+  submitFormResponse(input: $input) {
+    code
+    success
+    activity {
+      id
+      stream_id
+      date
+      action
+      status
+      resolution
+      reference_id
+      container_name
+      isUserActivity
+      public
+      session_id
+      icon_url
+    }
+  }
+}

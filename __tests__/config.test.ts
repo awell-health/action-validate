@@ -4,12 +4,11 @@ import {
   toActivityObjectType,
   toActivityType
 } from '../src/config'
-import { ActivityObjectType } from '../src/gql/types'
+import { ActivityObjectType } from '../src/gql/orchestration-types'
 
 describe('config', () => {
   const config = parseConfig('example-careflow-validation.yaml')
   const case1 = config.cases[0]
-
   it('should log a message', async () => {
     expect(config.cases.length).toBe(1)
   })

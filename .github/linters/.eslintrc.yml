@@ -13,6 +13,7 @@ ignorePatterns:
   - '**/dist/.*'
   - '**/coverage/.*'
   - '*.json'
+  - 'src/gql/*-types.ts'
 
 parser: '@typescript-eslint/parser'
 

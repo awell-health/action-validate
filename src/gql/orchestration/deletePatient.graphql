@@ -1,0 +1,6 @@
+mutation DeletePatient($input: DeletePatientInput!) {
+  deletePatient(input: $input) {
+    code
+    success
+  }
+}

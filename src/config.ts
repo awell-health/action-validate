@@ -2,7 +2,7 @@ import * as YAML from 'yaml'
 import { readFileSync } from 'fs'
 import * as path from 'path'
 import z from 'zod'
-import { ActivityAction, ActivityObjectType } from './gql/types'
+import { ActivityAction, ActivityObjectType } from './gql/orchestration-types'
 import { isEmpty } from 'lodash'
 
 // eslint-disable-next-line no-shadow

@@ -1,0 +1,6 @@
+mutation DeletePathway($input: DeletePathwayInput!) {
+  deletePathway(input: $input) {
+    code
+    success
+  }
+}

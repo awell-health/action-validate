@@ -2,7 +2,7 @@ import { Activities } from '../api/cases'
 import { ActivityType, ValidateConfig, toActivityType } from '../config'
 import * as core from '@actions/core'
 
-export const validateActivities = (
+export const validate = (
   v: ValidateConfig,
   activities: Activities
 ): boolean => {
