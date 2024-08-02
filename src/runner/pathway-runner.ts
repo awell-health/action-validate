@@ -245,8 +245,13 @@ export class DesignPathwayRunner extends PathwayRunner {
         baseline_info: this.config.baseline_datapoints
       }
     })
-    if (!resp.startPreview.success) {
-      throw new Error('failed to start preview')
+    if (
+      !resp.startPreview.success ||
+      resp.startPreview.pathway_case.status !== 'ACTIVE'
+    ) {
+      throw new Error(
+        `failed to start preview. response: ${JSON.stringify(resp)}`
+      )
     }
   }
   async getActivities() {
