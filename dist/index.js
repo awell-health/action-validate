@@ -74841,7 +74841,11 @@ const createPatient = async (opts) => {
     const client = (0, client_1.getOrchestrationClient)(controller);
     const resp = await client.CreatePatient({
         input: {
-            last_name: opts.lastName
+            ...(opts?.first_name && { first_name: opts.first_name }),
+            ...(opts?.last_name && { last_name: opts.last_name }),
+            ...(opts?.birth_date && { birth_date: opts.birth_date }),
+            ...(opts?.mobile_phone && { mobile_phone: opts.mobile_phone }),
+            ...(opts?.email && { email: opts.email })
         }
     });
     if (!resp.createPatient.success) {
@@ -75081,7 +75085,16 @@ const PathwayCaseConfigSchema = zod_1.default.object({
                 value: b.value
             };
         });
+    }),
+    patient: zod_1.default
+        .object({
+        first_name: zod_1.default.string().optional(),
+        last_name: zod_1.default.string().optional(),
+        birth_date: zod_1.default.string().optional(),
+        mobile_phone: zod_1.default.string().optional(),
+        email: zod_1.default.string().optional()
     })
+        .optional()
 });
 const ConfigSchema = zod_1.default.object({
     cases: zod_1.default.array(PathwayCaseConfigSchema)
@@ -76774,7 +76787,7 @@ class RunnerFactory {
      */
     async createRunner({ careflowDefinitionId, config }) {
         if (this.e2e) {
-            const { id: caseId } = await (0, cases_1.createPatient)({ lastName: config.title });
+            const { id: caseId } = await (0, cases_1.createPatient)(config.patient);
             const runner = new pathway_runner_1.OrchestrationPathwayRunner({
                 caseId,
                 config,

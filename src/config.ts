@@ -101,7 +101,16 @@ const PathwayCaseConfigSchema = z.object({
           value: b.value
         }
       })
+    }),
+  patient: z
+    .object({
+      first_name: z.string().optional(),
+      last_name: z.string().optional(),
+      birth_date: z.string().optional(),
+      mobile_phone: z.string().optional(),
+      email: z.string().optional()
     })
+    .optional()
 })
 
 const ConfigSchema = z.object({

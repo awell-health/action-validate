@@ -26,7 +26,7 @@ export class RunnerFactory {
     config: PathwayCaseConfig
   }): Promise<OrchestrationPathwayRunner | DesignPathwayRunner> {
     if (this.e2e) {
-      const { id: caseId } = await createPatient({ lastName: config.title })
+      const { id: caseId } = await createPatient(config.patient)
       const runner = new OrchestrationPathwayRunner({
         caseId,
         config,
