@@ -76587,7 +76587,7 @@ class PathwayRunner {
     isCompleted() {
         return (this._activities.filter(a => a.object.type === 'PATHWAY' &&
             a.status === 'DONE' &&
-            a.action === orchestration_types_1.ActivityAction.Complete).length > 0);
+            [orchestration_types_1.ActivityAction.Complete, orchestration_types_1.ActivityAction.Stopped].includes(a.action)).length > 0);
     }
     validateActivities() {
         return this.config.validate.map(v => (0, validate_1.validate)(v, this._activities));
