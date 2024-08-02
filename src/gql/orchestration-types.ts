@@ -2635,7 +2635,7 @@ export const FormDocument = gql`
     `;
 export const PathwayActivitiesDocument = gql`
     query PathwayActivities($pathway_id: String!) {
-  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 1000, offset: 0}) {
+  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 500, offset: 0}) {
     code
     success
     activities {

@@ -74902,6 +74902,7 @@ const getDesignClient = controller => {
             apikey: environment_1.default.AWELL_API_KEY
         },
         fetch: async (url, options) => {
+            core.debug(`making request to ${url} with options: ${JSON.stringify(options)}`);
             const prom = fetch(url, { ...options, signal }).finally(() => {
                 signal.removeEventListener('abort', () => { });
             });
@@ -74919,6 +74920,7 @@ const getOrchestrationClient = controller => {
             apikey: environment_1.default.AWELL_API_KEY
         },
         fetch: async (url, options) => {
+            core.debug(`making request to ${url} with options: ${JSON.stringify(options)}`);
             const prom = fetch(url, { ...options, signal }).finally(() => {
                 signal.removeEventListener('abort', () => { });
             });
@@ -76245,7 +76247,7 @@ exports.FormDocument = (0, graphql_tag_1.default) `
     `;
 exports.PathwayActivitiesDocument = (0, graphql_tag_1.default) `
     query PathwayActivities($pathway_id: String!) {
-  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 1000, offset: 0}) {
+  pathwayActivities(pathway_id: $pathway_id, pagination: {count: 500, offset: 0}) {
     code
     success
     activities {
@@ -76646,11 +76648,13 @@ class OrchestrationPathwayRunner extends PathwayRunner {
         if (this.careflow_id === undefined) {
             throw new Error('careflow_id is undefined');
         }
+        core.debug(`deleting care flow ${this.careflow_id}`);
         await this.sdk().DeletePathway({
             input: {
                 pathway_id: this.careflow_id
             }
         });
+        core.debug(`deleting patient ${this.caseId}`);
         await this.sdk().DeletePatient({
             input: {
                 patient_id: this.caseId

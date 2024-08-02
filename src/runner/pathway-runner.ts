@@ -216,11 +216,13 @@ export class OrchestrationPathwayRunner extends PathwayRunner {
     if (this.careflow_id === undefined) {
       throw new Error('careflow_id is undefined')
     }
+    core.debug(`deleting care flow ${this.careflow_id}`)
     await this.sdk().DeletePathway({
       input: {
         pathway_id: this.careflow_id
       }
     })
+    core.debug(`deleting patient ${this.caseId}`)
     await this.sdk().DeletePatient({
       input: {
         patient_id: this.caseId
