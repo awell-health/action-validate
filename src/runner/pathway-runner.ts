@@ -122,7 +122,7 @@ abstract class PathwayRunner {
         a =>
           a.object.type === 'PATHWAY' &&
           a.status === 'DONE' &&
-          a.action === ActivityAction.Complete
+          [ActivityAction.Complete, ActivityAction.Stopped].includes(a.action)
       ).length > 0
     )
   }
